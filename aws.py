@@ -9,8 +9,8 @@ Module to help facilitate calls to AWS SNS/SQS
 class AWS(object):
     """Container to handle interactions with AWS"""
     def __init__(self):
-        self.sns = boto3.client('sns')
-        self.sqs = boto3.client('sqs')
+        self.sns = boto3.client('sns', 'us-east-2')
+        self.sqs = boto3.client('sqs', 'us-east-2')
         self.sqs_res = boto3.resource('sqs', 'us-east-2')
         self.target_list = {}
 
