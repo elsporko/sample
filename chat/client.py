@@ -22,8 +22,7 @@ def get_messages(aws):
                 pass
 
 aws = AWS()
-my_topic=input('Input topic name: ')
-
+my_topic=input("Input topic name: ")
 
 # Create/find queue (queue will be used, but not created if it already exists)
 aws.create_queue(my_topic + '_queue')
@@ -39,7 +38,6 @@ aws.subscribe_to_topic()
 
 t = threading.Thread(target = get_messages, args=(aws,))
 t.start()
-
 
 o_topic=input('Who would you like to speak with? ')
 rt = aws.register_target(o_topic)

@@ -1,3 +1,7 @@
 __pycache__
 build_sample.sh
 .*.swp
+dev_notes.txt
+aws_keys.txt
+*.pyc
+venv

@@ -1,15 +1,15 @@
 FROM python:3-onbuild
 
 ARG secret=SECRET
-ENV AWS_SECRET_ACCESS_KEY=${secret}
+ENV aws_secret_access_key=${secret}
 
 ARG key=KEY
-ENV AWS_ACCESS_KEY_ID=$key
+ENV aws_access_key_id=$key
 
 ARG default=DEFAULT
-ENV AWS_DEFAULT_REGION=$default
+ENV aws_default_region=$default
 
-CMD ["python", "./client.py"]
+CMD ["python3", "./client.py"]
 
 #====================================
 #ARG buildtime_variable=default_value
