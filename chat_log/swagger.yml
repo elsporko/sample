@@ -1,0 +1,159 @@
+swagger: "2.0"
+info:
+  description: This is the swagger file that goes with our server code
+  version: "1.0.0"
+  title: Swagger REST Article
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+basePath: "/api"
+
+# Paths supported by the server application
+paths:
+  /chat_log:
+    get:
+      operationId: "twocans.read_all"
+      tags:
+        - twocans
+      summary: "Read the entire list of conversations"
+      description: "Read the list of conversations"
+      parameters:
+        - name: length
+          in: query
+          type: integer
+          description: Number of people to get from people
+          required: false
+        - name: offset
+          in: query
+          type: integer
+          description: Offset from beginning of list where to start gathering people
+          required: false
+      responses:
+        200:
+          description: "Successful read people list operation"
+          schema:
+            type: "array"
+            items:
+              properties:
+                recipient:
+                  type: string
+                  description: Handle of message recipient
+                source:
+                  type: string
+                  description: Handle of message sender
+                text:
+                  type: string
+                  description: Text of actual message
+                tag:
+                  type: string
+                  description: Conversation identifier
+
+    post:
+      operationId: twocans.create
+      tags:
+        - twocans
+      summary: Create a log entry for piece of conversation
+      description: Create a log entry for piece of conversation
+      parameters:
+        - name: chat_log
+          in: body
+          description: Record conversation snippet
+          required: True
+          schema:
+            type: object
+            properties:
+              recipient:
+                type: string
+                description: Handle of message recipient
+              sender:
+                type: string
+                description: Handle of message sender
+              text:
+                type: string
+                description: Text of actual message
+              tag:
+                type: string
+                description: Conversation identifier
+      responses:
+        201:
+          description: Successfully logged conversation snippet
+
+  /chat_log/get_by_name/{sender}:
+    get:
+      operationId: twocans.get_by_name
+      tags:
+        - twocans
+      summary: Get all logs for a specific sender
+      parameters:
+        - name: sender
+          in: path
+          description: Name of sender for filter
+          type: string
+          required: True
+      responses:
+        200:
+          description: Succesfully retrieved all records for a sender
+          schema:
+            properties:
+              recipient:
+                type: string
+              sender:
+                type: string
+              text:
+                type: string
+              tag:
+                type: string
+              
+  /chat_log/get_by_tag/{tag_id}:
+    get:
+      operationId: twocans.get_by_tag
+      tags:
+        - twocans
+      summary: Get all logs for a specific tag
+      parameters:
+        - name: tag_id
+          in: path
+          description: Name of tag for filter
+          type: string
+          required: True
+      responses:
+        200:
+          description: Succesfully retrieved all records for a sender
+          schema:
+            properties:
+              recipient:
+                type: string
+              sender:
+                type: string
+              text:
+                type: string
+              tag:
+                type: string
+              
+    delete:
+      operationId: twocans.delete
+      tags:
+        - twocans
+      summary: Delete a chat_log from the people list
+      description: Delete a chat_log
+      parameters:
+        - name: tag_id
+          in: path
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully deleted a chat_log from people list
+          schema:
+            properties:
+              recipient:
+                type: string
+              sender:
+                type: string
+              text:
+                type: string
+              tag:
+                type: string
+              
