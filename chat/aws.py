@@ -2,6 +2,7 @@ import boto3
 import json
 import sys
 import re
+from datetime import datetime
 
 """
 Module to help facilitate calls to AWS SNS/SQS
@@ -13,6 +14,8 @@ class AWS(object):
         self.sqs = boto3.client('sqs', 'us-east-2')
         self.sqs_res = boto3.resource('sqs', 'us-east-2')
         self.target_list = {}
+        self.chat_tag = ''
+        self.tag_set = False
 
     def create_topic(self, topic_name):
         self.topic = self.sns.create_topic(Name=topic_name)
@@ -31,9 +34,6 @@ class AWS(object):
         """
         Create/Add security policy to queue to allow topics to get tied to them
         """
-
-        #self.target_list = {s['Sid']:s['Condition']['ArnEquals']['aws:SourceArn'] for s in p['Statement']}
-
         self.policy = None
         try:
             self.policy = json.loads(self.get_policy())
@@ -84,7 +84,7 @@ class AWS(object):
         return self.sqs.receive_message(QueueUrl=self.queue['QueueUrl'],MaxNumberOfMessages=MaxNumberOfMessages, WaitTimeSeconds=WaitTimeSeconds, VisibilityTimeout=VisibilityTimeout)
 
     def send_message(self, msg, target):
-        return self.sns.publish(Message=msg, TopicArn=self.target_list[target])
+        return self.sns.publish(Message=msg, TopicArn=self.target_list[target], MessageAttributes={'chat_tag': {'DataType': 'String', 'StringValue': self.chat_tag}})
 
     def register_target(self, topic):
         self.target_list[topic]=re.sub(self.topic_name, topic, self.topic_arn)
@@ -95,3 +95,16 @@ class AWS(object):
 
     def delete_topic(self):
         self.sns.delete_topic(TopicArn=self.topic_arn)
+
+    def set_chat_tag(self, my_topic=None, o_topic=None, chat_tag=None):
+        # Memoize chat_tag, but update it if the tag recieved is different than the one
+        # on record. The idea is the first message published gets to name the chat_tag.
+        if self.chat_tag and self.chat_tag!=chat_tag:
+                self.chat_tag=chat_tag
+                self.tag_set=True
+
+        if my_topic and o_topic:
+            now = datetime.now()
+            self.chat_tag=(my_topic + '_' + o_topic + '_' + now.strftime("%m%d%Y_%H%M%S"))
+
+        return self.chat_tag

@@ -12,6 +12,11 @@ def get_messages(aws):
                     receipthandle=msg['ReceiptHandle']
                     msg=json.loads(msg['Body'])
                     if 'Message' in msg:
+                        # Update the name of the chat if this is the first time through. The
+                        # call to set_chat_tag is memoized, but by checking the flag we are
+                        # avoiding a function call
+                        if not aws.tag_set:
+                            aws.set_chat_tag(chat_tag=msg['MessageAttributes']['chat_tag']['Value'])
                         msg=msg['Message']
 
                         print ("\n\n+++++++++++++++++++++++++++++++++++++++++++++++")
@@ -41,6 +46,8 @@ t.start()
 
 o_topic=input('Who would you like to speak with? ')
 rt = aws.register_target(o_topic)
+
+aws.set_chat_tag(my_topic=my_topic, o_topic=o_topic)
 
 while True:
     try:
